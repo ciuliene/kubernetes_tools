@@ -1,5 +1,4 @@
-def log_message(message:str, text_color:str = None, bg_color:str = None, end: str = None):
-    text_color_code = {
+text_color_code = {
         'black': '\033[30m',
         'red': '\033[31m',
         'green': '\033[32m',
@@ -10,7 +9,7 @@ def log_message(message:str, text_color:str = None, bg_color:str = None, end: st
         'white': '\033[37m',
         'reset': '\033[10m'
     }
-    bg_color_code = {
+bg_color_code = {
         'black': '\033[40m',
         'red': '\033[41m',
         'green': '\033[42m',
@@ -21,7 +20,12 @@ def log_message(message:str, text_color:str = None, bg_color:str = None, end: st
         'white': '\033[47m',
         'reset': '\033[10m'
     }
-    reset_code = '\033[0m'
+
+txt_color = lambda c: text_color_code[c]
+bgd_color = lambda c: bg_color_code[c]
+reset_code = '\033[0m'
+
+def log_message(message:str, text_color:str = None, bg_color:str = None, end: str = None):
     if text_color not in text_color_code:
         text_color = 'reset'
     if bg_color not in bg_color_code:

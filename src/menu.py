@@ -1,6 +1,7 @@
 import os
 import readchar
-from src.custom_log import log_message
+from src.custom_log import *
+
 
 class Menu():
     def __init__(self, options:list) -> None:
@@ -9,12 +10,33 @@ class Menu():
         pass
     
     def clear(self): 
-        print("\033c")
+        os.system("clear")#print("\033c", end="")
     
+    def print_banner(self):
+        return f"{txt_color('green')}  _         _____   _______   _________ _______  _______  _        _______\n \
+| \    /\ / ___ \ (  ____ \  \__   __/(  ___  )(  ___  )( \      (  ____ \\\n \
+|  \  / /( (___) )| (    \/     ) (   | (   ) || (   ) || (      | (    \/ \n \
+|  (_/ /  \     / | (_____      | |   | |   | || |   | || |      | (_____ \n \
+|   _ (   / ___ \ (_____  )     | |   | |   | || |   | || |      (_____  )\n \
+|  ( \ \ ( (   ) )      ) |     | |   | |   | || |   | || |            ) |\n \
+|  /  \ \( (___) )/\____) |     | |   | (___) || (___) || (____/\/\____) |\n \
+|_/    \/ \_____/ \_______)     )_(   (_______)(_______)(_______/\_______)\n \
+{reset_code}Press Q key or CTRL+C combination to quit\n"
+
+    def banner_and_title(self, title:str="")-> str:
+        banner = self.print_banner()
+        text = ""
+                
+        for r in banner:
+            text += r
+                
+        text += f"\n{title}"
+
+        return text
+
     def print_menu(self, title:str = None):
         self.clear()
-        if title is not None:
-            print(title)
+        print(self.banner_and_title(title if title is not None else ""))
         for idx, option in enumerate(self.options):
             txt_color =  None if idx != self.selected_index else 'black'
             bg_color =  None if idx != self.selected_index else "white"

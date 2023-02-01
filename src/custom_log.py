@@ -26,6 +26,31 @@ bgd_color = lambda c: bg_color_code[c]
 reset_code = '\033[0m'
 
 def log_message(message:str, text_color:str = None, bg_color:str = None, end: str = None):
+    """Log message with custom colors
+
+    Available color:
+
+    - black
+    - red
+    - green
+    - yellow
+    - blue
+    - magenta
+    - cyan
+    - white
+    - reset
+    
+    Arguments: 
+    -----------------
+        - message: str
+            String to print
+        - text_color: str
+            Color of the text
+        - bg_color: str
+            Color of the background
+        - end: str
+            Suffix (value is put on print function)
+    """
     if text_color not in text_color_code:
         text_color = 'reset'
     if bg_color not in bg_color_code:

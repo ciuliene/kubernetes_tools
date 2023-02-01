@@ -86,6 +86,10 @@ def main():
                 if enable_flag == 1:
                     cmd.append(f"{arg['flag']}")
         
+        log_message("\033c", end="")
+
+        log_message(" ".join(cmd), text_color='cyan')
+
         run_shell(cmd, False)
         
     except KeyboardInterrupt:

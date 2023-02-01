@@ -9,7 +9,7 @@ class Menu():
         pass
     
     def clear(self): 
-        os.system("clear")
+        print("\033c")
     
     def print_menu(self, title:str = None):
         self.clear()

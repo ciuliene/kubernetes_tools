@@ -13,7 +13,7 @@ This project aims to simplify operations with K8S containers. Here is the list o
 | Feature | Description                             | Command                                                    |
 | ------- | --------------------------------------- | ---------------------------------------------------------- |
 | Bash    | Execute a bash shell in a container     | `kubectl exec <pod> --stdin --tty shell-demo -- /bin/bash` |
-| Log     | Get the log of a container in real-time | `kubectl attach <pod>`                                     |
+| Log     | Get the log of a container in real-time | `kubectl logs <pod>`                                       |
 
 ## Usage
 
@@ -37,3 +37,16 @@ Once the script is started, it tries to get the list of available pods inside th
 - See the log of the container in real-time
 
 To stop the script use the escape sequence `CTRL+C`.
+
+### Execute the bash shell of the container
+
+Using this command, the user will be able to execute the shell of a container and run shell commands within it
+
+### Get the log of a container in real-time
+
+For this action, the user will be ask for two other arguments:
+
+| Argument | Flag   | Description                             | Type    |
+| -------- | ------ | --------------------------------------- | ------- |
+| Tail     | --tail | Get the tail of the log (default is 10) | Integer |
+| Follow   | -f     | Follow the log (default is false)       | Bool    |

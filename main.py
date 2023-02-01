@@ -12,27 +12,84 @@ def run_shell(cmd: list = [], capture_output: bool = True) -> str:
     else:
         return None
 
-choices = ["1", "2"]
+commands = [
+    {
+        "id": 0, 
+        "txt": "Execute the bash shell of the container",
+        "cmd": lambda pod: [KUBE, "exec", pod, "--stdin", "--tty", "shell-demo", "--", "/bin/bash"],
+        "args": []
+    }, 
+    {
+        "id": 1, 
+        "txt": "See the log of the container in real-time",
+        "cmd": lambda pod: [KUBE, "logs", pod],
+        "args": [
+            {
+            "text": "Tail",
+            "flag": "--tail",
+            "type": "int",
+            "default": 10
+            },
+            {
+            "text": "Follow",
+            "flag": "-f",
+            "type": "bool",
+            "default": False
+            }
+        ]
+    },
+    ]
 
 def main():
-
     try:
-        pod_list = run_shell([KUBE, "get", "pods"]).split("\n")[1:]
-        pod_list = [x.split(" ")[0] for x in pod_list]
+        response = run_shell([KUBE, "get", "pods"]).split("\n")
+        title = f"Select a pod:\n{response[:1][0]}"
+        pod_list = response[1:]
         pod_list = [x for x in pod_list if len(x) > 0]
 
         menu = Menu(options=pod_list)
 
-        pod = menu.run_menu(title="Select the pod:")
+        pod = menu.run_menu(title=title).split(" ")[0]
 
-        menu = Menu(options = ["Execute the bash shell of the container", "See the log of the container in real-time"])
-        func = menu.run_menu(title="Select the command:", get_index=True)
-            
+        menu = Menu(options=[x['txt'] for x in commands])
+        id = menu.run_menu(title="Select the command:", get_index=True)
 
-        if func == 0:
-            run_shell([KUBE, "exec", pod, "--stdin", "--tty", "shell-demo", "--", "/bin/bash"], False)
-        elif func == 1:
-            run_shell([KUBE, "attach", pod], False)
+        id = int(id)
+
+        item = [x for x in commands if x['id'] == id]
+
+        if len(item) != 1:
+            log_message(f"Invalid selection", 'red')
+            exit()
+
+        item = item[0]
+        cmd = item['cmd'](pod)
+        args = item['args']
+
+        for arg in args:
+            title = f"{arg['text']} (default is {arg['default']})"
+            if arg['type'] == 'int':
+                val = arg['default']
+                while True:
+                    try:
+                        f_val = input(f"{title}: ")
+                        if f_val == '':
+                            break
+                        val = int(f_val)
+                        break
+                    except Exception as ex:
+                        log_message(f"Input must be an integer", 'red')
+
+                cmd.append(arg['flag'])
+                cmd.append(f"{val}")
+
+            elif arg['type'] == 'bool':
+                menu = Menu(options=["No", "Yes"])
+                enable_flag = menu.run_menu(title=title, get_index=True)
+                if enable_flag == 1:
+                    cmd.append(f"{arg['flag']}")
+        
+        run_shell(cmd, False)
         
     except KeyboardInterrupt:
         exit()

@@ -10,7 +10,7 @@ class Menu():
         pass
     
     def clear(self): 
-        os.system("clear")#print("\033c", end="")
+        os.system("clear")
     
     def print_banner(self):
         return f"{txt_color('green')}  _         _____   _______   _________ _______  _______  _        _______\n \
@@ -49,6 +49,9 @@ class Menu():
                 return -1
             if key == '\x1b[B':
                 return 1
+            if key.lower() == 'q':
+                log_message("\n[END]\n", text_color='black', bg_color='yellow')
+                exit(0)
             if key == '\n':
                 return 2
             try:

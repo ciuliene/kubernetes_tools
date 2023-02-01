@@ -16,8 +16,8 @@ class Menu():
         if title is not None:
             print(title)
         for idx, option in enumerate(self.options):
-            txt_color =  "white" if idx != self.selected_index else 'black'
-            bg_color =  'black' if idx != self.selected_index else "white"
+            txt_color =  None if idx != self.selected_index else 'black'
+            bg_color =  None if idx != self.selected_index else "white"
             log_message(option,text_color=txt_color, bg_color=bg_color)
 
     def get_choice(self):

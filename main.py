@@ -60,8 +60,7 @@ def main():
 
         if len(item) != 1:
             log_message(f"Invalid selection", 'red')
-            exit()
-
+            exit(-2)
         item = item[0]
         cmd = item['cmd'](pod)
         args = item['args']
@@ -79,10 +78,8 @@ def main():
                         break
                     except Exception as ex:
                         log_message(f"Input must be an integer", 'red')
-
                 cmd.append(arg['flag'])
                 cmd.append(f"{val}")
-
             elif arg['type'] == 'bool':
                 menu = Menu(options=["No", "Yes"])
                 enable_flag = menu.run_menu(title=title, get_index=True)
@@ -92,11 +89,11 @@ def main():
         run_shell(cmd, False)
         
     except KeyboardInterrupt:
-        exit()
+        exit(0)
 
     except Exception as ex:
         log_message(f"EXCEPTION: {ex}", 'red')
-    return
+        exit(-1)
 
 if __name__ == "__main__":
     main()

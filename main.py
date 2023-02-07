@@ -1,8 +1,19 @@
 import subprocess
-from src.custom_log import log_message
+from src.custom_log import *
 from src.menu import Menu
 
 KUBE = 'kubectl'
+
+def banner():
+        return f"{txt_color('green')}  _         _____   _______   _________ _______  _______  _        _______\n \
+| \    /\ / ___ \ (  ____ \  \__   __/(  ___  )(  ___  )( \      (  ____ \\\n \
+|  \  / /( (___) )| (    \/     ) (   | (   ) || (   ) || (      | (    \/ \n \
+|  (_/ /  \     / | (_____      | |   | |   | || |   | || |      | (_____ \n \
+|   _ (   / ___ \ (_____  )     | |   | |   | || |   | || |      (_____  )\n \
+|  ( \ \ ( (   ) )      ) |     | |   | |   | || |   | || |            ) |\n \
+|  /  \ \( (___) )/\____) |     | |   | (___) || (___) || (____/\/\____) |\n \
+|_/    \/ \_____/ \_______)     )_(   (_______)(_______)(_______/\_______)\n \
+{reset_code}Press Q key or CTRL+C combination to quit\n"
 
 def run_shell(cmd: list = [], capture_output: bool = True) -> str:
     response = subprocess.run(cmd, capture_output=capture_output, check=True).stdout
@@ -42,6 +53,7 @@ commands = [
 
 def main():
     try:
+        print(banner())
         response = run_shell([KUBE, "get", "pods"]).split("\n")
         title = f"Select a pod:\n{response[:1][0]}"
         pod_list = response[1:]

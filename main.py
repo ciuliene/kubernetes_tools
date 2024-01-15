@@ -1,11 +1,22 @@
 import subprocess
 from src.custom_log import *
 from src.menu import Menu
+import argparse
+
+
+def get_arguments():
+    parser = argparse.ArgumentParser(
+        description="Kubernetes shell: a shell to interact with kubernetes clusters")
+
+    parser.add_argument("-c", "--clusters", action="store_true")
+
+    return parser.parse_args().clusters
+
 
 KUBE = 'kubectl'
 
 def banner():
-    return "\n".join([txt_color('green') + r" _         _____   _______   _________ _______  _______  _        _______",
+    print("\n".join([txt_color('green') + r" _         _____   _______   _________ _______  _______  _        _______",
                      r"| \    /\ / ___ \ (  ____ \  \__   __/(  ___  )(  ___  )( \      (  ____ \ ",
                       r"|  \  / /( (___) )| (    \/     ) (   | (   ) || (   ) || (      | (    \/ ",
                       r"|  (_/ /  \     / | (_____      | |   | |   | || |   | || |      | (_____ ",
@@ -13,7 +24,7 @@ def banner():
                       r"|  ( \ \ ( (   ) )      ) |     | |   | |   | || |   | || |            ) |",
                       r"|  /  \ \( (___) )/\____) |     | |   | (___) || (___) || (____/\/\____) |",
                       r"|_/    \/ \_____/ \_______)     )_(   (_______)(_______)(_______/\_______)",
-                      f"{reset_code}Press Q key or CTRL+C combination to quit\n"])
+                      reset_code]))
 
 
 def run_shell(cmd: list = [], capture_output: bool = True) -> str:
@@ -52,9 +63,68 @@ commands = [
     },
     ]
 
+
+def print_clusters():
+    print(f"List of avaialble clusters. [{
+          txt_color('cyan')}* current cluster{reset_code}]:\n")
+
+    clusters = get_clusters()
+
+    for cluster in clusters:
+        if cluster['current']:
+            print(f"{txt_color('cyan')} * {cluster['name']}{reset_code}")
+        else:
+            print(f"   {cluster['name']}")
+
+
+def get_clusters() -> str:
+    response = run_shell(
+        [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")[:2]
+
+    current = get_current_cluster()
+
+    return [{'name': name, 'current': name == current} for name in response if len(name) > 0]
+
+
+def get_current_cluster() -> str:
+    response = run_shell([KUBE, "config", "current-context"])
+    if response is not None:
+        return response.strip()
+    else:
+        return None
+
+
+def set_current_cluster():
+    try:
+        print("Press Q key or CTRL+C combination to quit\n")
+        clusters = get_clusters()
+
+        options = [f" {"*" if x['current']
+                       else " "} {x['name']}" for x in clusters]
+
+        menu = Menu(options=options)
+
+        selected_cluster_index = menu.run_menu(
+            title="Select the cluster:", get_index=True)
+
+        cluster_name = clusters[selected_cluster_index]['name']
+
+        run_shell([KUBE, "config", "use-context", cluster_name])
+
+        log_message(f"Current cluster: {txt_color('cyan')}{
+                    get_current_cluster()}{reset_code}\n")
+    except KeyboardInterrupt:
+        exit(0)
+    except Exception as ex:
+        log_message(f"EXCEPTION: {ex}", 'red')
+        exit(-1)
+
 def main():
     try:
-        print(banner())
+        print("Press Q key or CTRL+C combination to quit\n")
+        print(f"Current cluster: {txt_color('cyan')}{
+              get_current_cluster()}{reset_code}\n")
+
         response = run_shell([KUBE, "get", "pods"]).split("\n")
         title = f"Select a pod:\n{response[:1][0]}"
         pod_list = response[1:]
@@ -113,4 +183,12 @@ def main():
         exit(-1)
 
 if __name__ == "__main__":
-    main()
+    banner()
+
+    clusters = get_arguments()
+
+    if clusters is False:
+        main()
+
+    else:
+        set_current_cluster()

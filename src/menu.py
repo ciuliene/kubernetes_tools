@@ -1,4 +1,3 @@
-import os
 import readchar
 from src.custom_log import *
 import sys

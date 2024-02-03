@@ -25,34 +25,39 @@ class Menu():
 
         self._n_lines = 0
         for idx, option in enumerate(self.options):
-            txt_color =  None if idx != self.selected_index else 'white'
-            bg_color =  None if idx != self.selected_index else "blue"
-            log_message(f"{prefix}{option.ljust(longest)}",text_color=txt_color, bg_color=bg_color)
-            self._n_lines+=1
+            txt_color = None if idx != self.selected_index else 'white'
+            bg_color = None if idx != self.selected_index else "blue"
+            log_message(f"{prefix}{option.ljust(longest)}",
+                        text_color=txt_color, bg_color=bg_color)
+            self._n_lines += 1
 
         for _ in range(self._n_lines):
             sys.stdout.write("\033[F")
 
     def get_choice(self):
-        while True:
-            key = readchar.readkey()
-            if key == '\x1b[A':
-                return -1
-            if key == '\x1b[B':
-                return 1
-            if key.lower() == 'q':
-                log_message("\n[END]\n", text_color='black', bg_color='yellow')
-                exit(0)
-            if key == '\n':
-                return 2
-            try:
-                choice = int(key) - 1
-                if 0 <= choice < len(self.options):
-                    return choice
-            except ValueError:
-                pass
+        try:
+            while True:
+                key = readchar.readkey()
+                if key == '\x1b[A':
+                    return -1
+                if key == '\x1b[B':
+                    return 1
+                if key.lower() == 'q':
+                    exit(0)
+                if key == '\n':
+                    return 2
+                try:
+                    choice = int(key) - 1
+                    if 0 <= choice < len(self.options):
+                        return choice
+                except ValueError:
+                    pass
+        except KeyboardInterrupt:
+            exit(0)
 
-    def run_menu(self, title: str = None, get_index:bool=False) -> str | int:
+    def run_menu(self, title: str = None, get_index: bool = False, help: bool = True) -> str | int:
+        if help:
+            print("Press Q key or CTRL+C combination to quit\n")
         print(title)
         while True:
             self.print_menu()

@@ -8,9 +8,14 @@ def get_arguments():
     parser = argparse.ArgumentParser(
         description="Kubernetes shell: a shell to interact with kubernetes clusters")
 
-    parser.add_argument("-c", "--clusters", action="store_true")
+    parser.add_argument("-c", "--clusters",
+                        help="current cluster", action="store_true")
+    parser.add_argument("-d", "--deployments",
+                        help="deployments info", action="store_true")
 
-    return parser.parse_args().clusters
+    args = parser.parse_args()
+
+    return args
 
 
 KUBE = 'kubectl'
@@ -64,19 +69,6 @@ commands = [
     ]
 
 
-def print_clusters():
-    print(f"List of avaialble clusters. [{
-          txt_color('cyan')}* current cluster{reset_code}]:\n")
-
-    clusters = get_clusters()
-
-    for cluster in clusters:
-        if cluster['current']:
-            print(f"{txt_color('cyan')} * {cluster['name']}{reset_code}")
-        else:
-            print(f"   {cluster['name']}")
-
-
 def get_clusters() -> str:
     response = run_shell(
         [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")[:2]
@@ -96,7 +88,6 @@ def get_current_cluster() -> str:
 
 def set_current_cluster():
     try:
-        print("Press Q key or CTRL+C combination to quit\n")
         clusters = get_clusters()
 
         options = [f" {"*" if x['current']
@@ -119,9 +110,37 @@ def set_current_cluster():
         log_message(f"EXCEPTION: {ex}", 'red')
         exit(-1)
 
+
+def set_deployment_replicas():
+    response = run_shell([KUBE, "get", "deployments"]).split("\n")
+
+    title = f"Select a deployment:\n{response[:1][0]}"
+    deployments = response[1:]
+    deployments = [x for x in deployments if len(x) > 0]
+
+    menu = Menu(options=deployments)
+
+    deployment = menu.run_menu(title=title).split(" ")[0]
+
+    replicas = input("Number of replicas: ")
+
+    try:
+        replicas = int(replicas)
+        if replicas < 0:
+            raise ValueError("Replicas must be a non-negative integer")
+    except Exception as ex:
+        log_message(f"Invalid input: {ex}", 'red')
+        exit(-1)
+
+    run_shell(
+        [KUBE, "scale", f"deployment/{deployment}", f"--replicas={replicas}"])
+
+    log_message(f"Deployment {txt_color('cyan')}{deployment}{
+                reset_code} has been scaled to {txt_color('cyan')}{replicas}{reset_code}\n")
+
+
 def main():
     try:
-        print("Press Q key or CTRL+C combination to quit\n")
         print(f"Current cluster: {txt_color('cyan')}{
               get_current_cluster()}{reset_code}\n")
 
@@ -185,10 +204,11 @@ def main():
 if __name__ == "__main__":
     banner()
 
-    clusters = get_arguments()
+    args = get_arguments()
 
-    if clusters is False:
-        main()
-
-    else:
+    if args.clusters is True:
         set_current_cluster()
+    elif args.deployments is True:
+        set_deployment_replicas()
+    else:
+        main()

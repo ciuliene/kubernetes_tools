@@ -4,7 +4,16 @@
 
 ## Prerequisites
 
-This tool uses _kubectl_ commands. `kubectl` software must be installed and properly configured. To do so, please visit this [link](https://kubernetes.io/docs/tasks/tools/).
+This tool uses _kubectl_ commands. `kubectl` and `azure-cli` softwares must be installed and properly configured. 
+For more information, please visit this [link](https://kubernetes.io/docs/tasks/tools/).
+First of all, you must configure the K8S context, by issuing this command:
+
+```sh
+az aks get-credentials --resource-group <resource-group> --name <cluster-name>
+```
+
+This command must be issued for each cluster you want to manage.
+
 
 ## Description
 

@@ -90,8 +90,9 @@ def set_current_cluster():
     try:
         clusters = get_clusters()
 
-        options = [f" {"*" if x['current']
-                       else " "} {x['name']}" for x in clusters]
+        options = [
+            f' {"*" if x["current"]else " "} {x["name"]}' for x in clusters
+        ]
 
         menu = Menu(options=options)
 
@@ -102,8 +103,8 @@ def set_current_cluster():
 
         run_shell([KUBE, "config", "use-context", cluster_name])
 
-        log_message(f"Current cluster: {txt_color('cyan')}{
-                    get_current_cluster()}{reset_code}\n")
+        log_message(
+            f"Current cluster: {txt_color('cyan')}{get_current_cluster()}{reset_code}\n")
     except KeyboardInterrupt:
         exit(0)
     except Exception as ex:
@@ -135,14 +136,14 @@ def set_deployment_replicas():
     run_shell(
         [KUBE, "scale", f"deployment/{deployment}", f"--replicas={replicas}"])
 
-    log_message(f"Deployment {txt_color('cyan')}{deployment}{
-                reset_code} has been scaled to {txt_color('cyan')}{replicas}{reset_code}\n")
+    log_message(
+        f"Deployment {txt_color('cyan')}{deployment}{reset_code} has been scaled to {txt_color('cyan')}{replicas}{reset_code}\n")
 
 
 def main():
     try:
-        print(f"Current cluster: {txt_color('cyan')}{
-              get_current_cluster()}{reset_code}\n")
+        print(
+            f"Current cluster: {txt_color('cyan')}{get_current_cluster()}{reset_code}\n")
 
         response = run_shell([KUBE, "get", "pods"]).split("\n")
         title = f"Select a pod:\n{response[:1][0]}"

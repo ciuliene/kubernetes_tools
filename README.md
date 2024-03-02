@@ -4,16 +4,26 @@
 
 ## Prerequisites
 
-This tool uses _kubectl_ commands. `kubectl` and `azure-cli` softwares must be installed and properly configured. 
-For more information, please visit this [link](https://kubernetes.io/docs/tasks/tools/).
-First of all, you must configure the K8S context, by issuing this command:
+This tool uses `python` (version 3.11.x or higher) and `kubectl` to connect to a K8S cluster.
+Both softwares must be installed and properly configured. 
+For more information, please visit these links
+
+- [python](https://www.python.org/downloads/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/).
+
+### Setup for cloud providers
+
+If you want to use this tool with a cloud provider (like Azure, AWS or Google Cloud) you must have the proper CLI installed and configured.
+
+Here is an example for Azure:
+To connect to an Azure Kubernetes Service (AKS) cluster, you must have the `azure-cli` installed and properly configured.
+To configure the K8S context, issue this command:
 
 ```sh
 az aks get-credentials --resource-group <resource-group> --name <cluster-name>
 ```
 
 This command must be issued for each cluster you want to manage.
-
 
 ## Description
 

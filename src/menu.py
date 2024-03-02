@@ -34,7 +34,7 @@ class Menu():
         for _ in range(self._n_lines):
             sys.stdout.write("\033[F")
 
-    def get_choice(self):
+    def __get_choice(self):
         try:
             while True:
                 key = readchar.readkey()
@@ -46,12 +46,7 @@ class Menu():
                     exit(0)
                 if key == '\n':
                     return 2
-                try:
-                    choice = int(key) - 1
-                    if 0 <= choice < len(self.options):
-                        return choice
-                except ValueError:
-                    pass
+                return 0
         except KeyboardInterrupt:
             exit(0)
 
@@ -61,7 +56,10 @@ class Menu():
         print(title)
         while True:
             self.print_menu()
-            input = self.get_choice()
+            input = self.__get_choice()
+
+            if input == 0:
+                continue
 
             if input == 2:
                 break

@@ -57,7 +57,8 @@ def log_message(message:str, text_color:str = None, bg_color:str = None, end: st
         bg_color = 'reset'
     print(f"{bg_color_code[bg_color]}{text_color_code[text_color]}{message}{reset_code}", end='\n' if end is None else end)
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":  # pragma: no cover
     color_list = ['black',
         'red',
         'green',

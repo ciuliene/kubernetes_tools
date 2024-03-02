@@ -71,7 +71,7 @@ commands = [
 
 def get_clusters() -> str:
     response = run_shell(
-        [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")[:2]
+        [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")[0:-1]
 
     current = get_current_cluster()
 

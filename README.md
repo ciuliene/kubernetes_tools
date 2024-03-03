@@ -110,3 +110,11 @@ For this action, the user will be ask for two other arguments:
 | -------- | ------ | --------------------------------------- | ------- |
 | Tail     | --tail | Get the tail of the log (default is 10) | Integer |
 | Follow   | -f     | Follow the log (default is false)       | Bool    |
+
+### Clusters
+
+This command lists all clusters and set the active one. The user can choose a cluster using arrow keys _up_ and _down_ for moving and _enter_ key to select.
+
+### Deployments
+
+This command lists all deployments and set the number of replicas. The user can choose a deployment using arrow keys _up_ and _down_ for moving and _enter_ key to select. Then the user will be asked for the number of replicas (greater than or equal to zero).

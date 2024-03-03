@@ -34,7 +34,7 @@ def banner():
 
 def run_shell(cmd: list = [], capture_output: bool = True) -> str:
     response = subprocess.run(cmd, capture_output=capture_output, check=True).stdout
-    
+
     if response is not None:
         return response.decode("utf-8")
     else:
@@ -62,7 +62,8 @@ commands = [
             "text": "Follow",
             "flag": "-f",
             "type": "bool",
-            "default": False
+                "default": False,
+                "options": ["No", "Yes"]
             }
         ]
     },
@@ -71,7 +72,7 @@ commands = [
 
 def get_clusters() -> str:
     response = run_shell(
-        [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")[0:-1]
+        [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")
 
     current = get_current_cluster()
 
@@ -86,7 +87,7 @@ def get_current_cluster() -> str:
         return None
 
 
-def set_current_cluster():
+def set_current_cluster() -> bool:
     try:
         clusters = get_clusters()
 
@@ -111,13 +112,19 @@ def set_current_cluster():
         log_message(f"EXCEPTION: {ex}", 'red')
         exit(-1)
 
+    return True
 
-def set_deployment_replicas():
+
+def set_deployment_replicas() -> bool:
     response = run_shell([KUBE, "get", "deployments"]).split("\n")
 
     title = f"Select a deployment:\n{response[:1][0]}"
     deployments = response[1:]
     deployments = [x for x in deployments if len(x) > 0]
+
+    if len(deployments) == 0:
+        log_message("No deployments found", 'yellow')
+        exit(-1)
 
     menu = Menu(options=deployments)
 
@@ -139,6 +146,7 @@ def set_deployment_replicas():
     log_message(
         f"Deployment {txt_color('cyan')}{deployment}{reset_code} has been scaled to {txt_color('cyan')}{replicas}{reset_code}\n")
 
+    return True
 
 def main():
     try:
@@ -146,8 +154,15 @@ def main():
             f"Current cluster: {txt_color('cyan')}{get_current_cluster()}{reset_code}\n")
 
         response = run_shell([KUBE, "get", "pods"]).split("\n")
-        title = f"Select a pod:\n{response[:1][0]}"
+
         pod_list = response[1:]
+
+        if len(pod_list) == 0:
+            log_message("No pods found", 'yellow')
+            exit(-1)
+
+        title = f"Select a pod:\n{response[:1][0]}"
+
         pod_list = [x for x in pod_list if len(x) > 0]
 
         menu = Menu(options=pod_list)
@@ -159,14 +174,10 @@ def main():
 
         id = int(id)
 
-        item = [x for x in commands if x['id'] == id]
+        feature = commands[id]
 
-        if len(item) != 1:
-            log_message(f"Invalid selection", 'red')
-            exit(-2)
-        item = item[0]
-        cmd = item['cmd'](pod)
-        args = item['args']
+        cmd = feature['cmd'](pod)
+        args = feature['args']
 
         for arg in args:
             title = f"{arg['text']} (default is {arg['default']})"
@@ -178,14 +189,17 @@ def main():
                         if f_val == '':
                             break
                         val = int(f_val)
+                        if val < 0:
+                            raise ValueError("negative")
                         break
                     except Exception as ex:
-                        log_message(f"Input must be an integer", 'red')
+                        log_message(f"Input must be a positive integer", 'red')
                 cmd.append(arg['flag'])
                 cmd.append(f"{val}")
             elif arg['type'] == 'bool':
-                menu = Menu(options=["No", "Yes"])
+                menu = Menu(options=arg['options'])
                 enable_flag = menu.run_menu(title=title, get_index=True)
+                print(enable_flag)
                 if enable_flag == 1:
                     cmd.append(f"{arg['flag']}")
         
@@ -195,14 +209,17 @@ def main():
 
         run_shell(cmd, False)
         
-    except KeyboardInterrupt:
+    except KeyboardInterrupt:  # pragma: no cover
         exit(0)
 
     except Exception as ex:
         log_message(f"EXCEPTION: {ex}", 'red')
         exit(-1)
 
-if __name__ == "__main__":
+    return True
+
+
+if __name__ == "__main__":  # pragma: no cover
     banner()
 
     args = get_arguments()

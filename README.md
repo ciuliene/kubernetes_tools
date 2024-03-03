@@ -2,6 +2,18 @@
 
 **Kubernetes Tools** can connect to Kubernetes (K8S) and execute some commands without using the command line interface.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Description](#description)
+- [Usage](#usage)
+  - [Arguments](#arguments)
+  - [Pods](#pods)
+    - [Execute the bash shell of the container](#execute-the-bash-shell-of-the-container)
+    - [Get the log of a container in real-time](#get-the-log-of-a-container-in-real-time)
+  - [Clusters](#clusters)
+  - [Deployments](#deployments)
+
 ## Prerequisites
 
 This tool uses `python` (version 3.11.x or higher) and `kubectl` to connect to a K8S cluster.

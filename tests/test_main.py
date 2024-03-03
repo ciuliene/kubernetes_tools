@@ -4,6 +4,7 @@ from main import *
 from tests.mocks import *
 
 
+@patch('builtins.print')
 class TestMain(unittest.TestCase):
     def __init__(self, methodName: str = "runTest") -> None:
         super().__init__(methodName)
@@ -53,7 +54,6 @@ class TestMain(unittest.TestCase):
         self.assertFalse(actual.clusters)
         self.assertTrue(actual.deployments)
 
-    @patch('builtins.print')
     def test_banner_returns_expected_string(self, mock_print, *_):
         # Arrange
         expected = "\n".join([txt_color('green') + r" _         _____   _______   _________ _______  _______  _        _______",
@@ -130,7 +130,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         clusters = ["cluster-1", "cluster-2"]
         mock_run.side_effect = [MockSubProcess(
-            "\n".join(clusters)), MockSubProcess(None)]
+            "\n".join(clusters)), Exception]
 
         # Act
         actual = get_clusters()
@@ -140,7 +140,6 @@ class TestMain(unittest.TestCase):
             self.assertEqual(actual[i]["name"], expected)
             self.assertFalse(actual[i]["current"])
 
-    @patch('builtins.print')
     @patch('readchar.readkey', side_effect=['\n'])
     @patch('subprocess.run')
     def test_setting_current_cluster_returns_expected_string(self, mock_run, *_):
@@ -154,7 +153,6 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertTrue(result)
 
-    @patch('builtins.print')
     # Just to avoid the exit call
     @patch('builtins.exit', side_effect=ValueError)
     @patch('subprocess.run', side_effect=Exception)
@@ -163,7 +161,6 @@ class TestMain(unittest.TestCase):
         with self.assertRaises(ValueError):
             set_current_cluster()
 
-    @patch('builtins.print')
     # Just to avoid the exit call
     @patch('builtins.exit', side_effect=ValueError)
     @patch('subprocess.run', side_effect=KeyboardInterrupt)
@@ -174,7 +171,6 @@ class TestMain(unittest.TestCase):
 
     # Just to avoid the exit call
     @patch('builtins.exit', side_effect=ValueError)
-    @patch('builtins.print')
     @patch('subprocess.run')
     def test_setting_replicas_quits_when_deployment_list_is_empty(self, mock_run, *_):
         # Arrange
@@ -186,7 +182,6 @@ class TestMain(unittest.TestCase):
 
     # Just to avoid the exit call
     @patch('builtins.exit', side_effect=ValueError)
-    @patch('builtins.print')
     @patch("builtins.input", return_value="-1")
     @patch('readchar.readkey')
     @patch('subprocess.run')
@@ -199,7 +194,6 @@ class TestMain(unittest.TestCase):
         with self.assertRaises(ValueError):
             set_deployment_replicas()
 
-    @patch('builtins.print')
     @patch("builtins.input", return_value="2")
     @patch('readchar.readkey')
     @patch('subprocess.run')
@@ -215,7 +209,6 @@ class TestMain(unittest.TestCase):
         self.assertTrue(result)
 
     @patch('builtins.exit', side_effect=ValueError)
-    @patch('builtins.print')
     @patch('subprocess.run')
     def test_main_quits_when_pod_list_is_empty(self, mock_run, *_):
         # Arrange
@@ -227,7 +220,6 @@ class TestMain(unittest.TestCase):
             main()
 
     @patch('builtins.exit', side_effect=ValueError)
-    @patch('builtins.print')
     @patch('readchar.readkey', return_value='\n')
     @patch('subprocess.run')
     def test_main_succeds_to_run_container_shell(self, mock_run, *_):
@@ -244,7 +236,6 @@ class TestMain(unittest.TestCase):
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch("builtins.input", return_value='')
-    @patch('builtins.print')
     @patch('readchar.readkey', side_effect=['\n', '\x1b[B', '\n', '\n', '\n'])
     @patch('subprocess.run')
     def test_main_succeds_to_get_container_logs_with_default_value(self, mock_run, *_):
@@ -261,7 +252,6 @@ class TestMain(unittest.TestCase):
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch("builtins.input", return_value='1')
-    @patch('builtins.print')
     @patch('readchar.readkey', side_effect=['\n', '\x1b[B', '\n', '\n', '\n'])
     @patch('subprocess.run')
     def test_main_succeds_to_get_container_logs_with_custom_value(self, mock_run, *_):
@@ -278,7 +268,6 @@ class TestMain(unittest.TestCase):
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch("builtins.input", side_effect=['invalid', '-1', '1'])
-    @patch('builtins.print')
     @patch('readchar.readkey', side_effect=['\n', '\x1b[B', '\n', '\n'])
     @patch('subprocess.run')
     def test_main_succeds_to_get_container_logs_at_third_attempt(self, mock_run, *_):
@@ -295,7 +284,6 @@ class TestMain(unittest.TestCase):
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch("builtins.input", return_value='1')
-    @patch('builtins.print')
     @patch('readchar.readkey', side_effect=['\n', '\x1b[B', '\n', '\x1b[B', '\n'])
     @patch('subprocess.run')
     def test_main_succeds_to_get_container_logs_with_set_flag(self, mock_run, *_):

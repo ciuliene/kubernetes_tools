@@ -74,7 +74,12 @@ def get_clusters() -> str:
     response = run_shell(
         [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")
 
-    current = get_current_cluster()
+    current = None
+
+    try:
+        current = get_current_cluster()
+    except Exception as ex:
+        log_message(f"EXCEPTION: {ex}", 'yellow')
 
     return [{'name': name, 'current': name == current} for name in response if len(name) > 0]
 

@@ -98,11 +98,11 @@ Once the script is started, it tries to get the list of available pods inside th
 
 To stop the script use the escape sequence `CTRL+C`.
 
-### Execute the bash shell of the container
+#### Execute the bash shell of the container
 
 Using this command, the user will be able to execute the shell of a container and run shell commands within it.
 
-### Get the log of a container in real-time
+#### Get the log of a container in real-time
 
 For this action, the user will be ask for two other arguments:
 

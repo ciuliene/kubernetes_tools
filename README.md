@@ -100,7 +100,7 @@ To stop the script use the escape sequence `CTRL+C`.
 
 ### Execute the bash shell of the container
 
-Using this command, the user will be able to execute the shell of a container and run shell commands within it
+Using this command, the user will be able to execute the shell of a container and run shell commands within it.
 
 ### Get the log of a container in real-time
 

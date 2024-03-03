@@ -6,10 +6,10 @@
 
 This tool uses `python` (version 3.11.x or higher) and `kubectl` to connect to a K8S cluster.
 Both softwares must be installed and properly configured. 
-For more information, please visit these links
+For more information, please visit these links:
 
 - [python](https://www.python.org/downloads/)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
 
 ### Setup for cloud providers
 

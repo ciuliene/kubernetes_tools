@@ -1,6 +1,6 @@
 # Kubernetes Tools
 
-[![Python application](https://github.com/ciuliene/kubernetes_tools/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/ciuliene/kubernetes_tools/actions/workflows/python-app.yml) [![codecov](https://codecov.io/gh/ciuliene/kubernetes_tools/graph/badge.svg?token=XH7I1SGO3M)](https://codecov.io/gh/ciuliene/kubernetes_tools)
+[![Python application](https://github.com/ciuliene/kubernetes_tools/actions/workflows/python-app.yml/badge.svg?event=pull_request)](https://github.com/ciuliene/kubernetes_tools/actions/workflows/python-app.yml) [![codecov](https://codecov.io/gh/ciuliene/kubernetes_tools/graph/badge.svg?token=XH7I1SGO3M)](https://codecov.io/gh/ciuliene/kubernetes_tools)
 
 **Kubernetes Tools** can connect to Kubernetes (K8S) and execute some commands without using the command line interface.
 

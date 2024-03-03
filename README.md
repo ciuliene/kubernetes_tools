@@ -74,13 +74,13 @@ python -m pip install -r requirements.txt
 Run the script with the desired argument. For example, to list all clusters and set the active one:
 
 ```sh
-python main.py --clusters
+python main.py --clusters # or -c
 ```
 
 To list all deployments and set the number of replicas:
 
 ```sh
-python main.py --deployments
+python main.py --deployments # or -d
 ```
 
 To manage your pods:

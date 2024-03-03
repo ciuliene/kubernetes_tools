@@ -41,7 +41,21 @@ Other useful features are:
 
 ## Usage
 
-**NOTE**: It is recommended to use this tool inside a virtual environment. For more information see this [link](https://docs.python.org/3/library/venv.html)
+**NOTE**: It is recommended to use this tool inside a virtual environment. 
+
+To do this, create a virtual environment:
+
+```sh
+python -m venv <virtual-env-name> # .gitignore is already set to ignore folder called "venv"
+```
+
+and activate it (for Linux and MacOS) with this command:
+
+```sh
+source <virtual-env-name>/bin/activate
+```
+
+For more information see this [link](https://docs.python.org/3/library/venv.html)
 
 Install required packages:
 

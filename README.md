@@ -18,9 +18,7 @@
 
 ## Prerequisites
 
-This tool uses `python` (version 3.11.x or higher) and `kubectl` to connect to a K8S cluster.
-Both softwares must be installed and properly configured. 
-For more information, please visit these links:
+This tool uses `python` (version 3.11.x or higher) and `kubectl` to connect to a K8S cluster. Both softwares must be installed and properly configured. For more information, please visit these links:
 
 - [python](https://www.python.org/downloads/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
@@ -29,9 +27,7 @@ For more information, please visit these links:
 
 If you want to use this tool with a cloud provider (like Azure, AWS or Google Cloud) you must have the proper CLI installed and configured.
 
-Here is an example for Azure:
-To connect to an Azure Kubernetes Service (AKS) cluster, you must have the `azure-cli` installed and properly configured.
-To configure the K8S context, issue this command:
+Here is an example for Azure: To connect to an Azure Kubernetes Service (AKS) cluster, you must have the `azure-cli` installed and properly configured. To configure the K8S context, issue this command:
 
 ```sh
 az aks get-credentials --resource-group <resource-group> --name <cluster-name>
@@ -43,10 +39,10 @@ This command must be issued for each cluster you want to manage.
 
 This project aims to simplify operations with K8S containers. Here is the list of developed features:
 
-| Feature | Description                             | Command                                                    |
-| ------- | --------------------------------------- | ---------------------------------------------------------- |
-| Bash    | Execute a bash shell in a container     | `kubectl exec <pod> --stdin --tty shell-demo -- /bin/bash` |
-| Log     | Get the log of a container in real-time | `kubectl logs <pod>`                                       |
+| Feature | Description | Command |
+| --- | --- | --- |
+| Bash | Execute a bash shell in a container | `kubectl exec <pod> --stdin --tty shell-demo -- /bin/bash` |
+| Log | Get the log of a container in real-time | `kubectl logs <pod>` |
 
 Other useful features are:
 
@@ -55,7 +51,7 @@ Other useful features are:
 
 ## Usage
 
-**NOTE**: It is recommended to use this tool inside a virtual environment. 
+**NOTE**: It is recommended to use this tool inside a virtual environment.
 
 To do this, create a virtual environment:
 
@@ -79,10 +75,11 @@ python -m pip install -r requirements.txt
 
 ### Arguments
 
-| Argument    | Flag                    | Description                                         |
-| ----------- | ----------------------- | --------------------------------------------------- |
-| Pods        |                         | Run the main script to management your pods         |
-| Clusters    | `-c` or `--clusters`    | List all clusters and set the active one            |
+| Argument | Flag | Description |
+| --- | --- | --- |
+| Pods |  | Run the main script to management your pods |
+| Running pods | `-r` or `--running` | Run the main script getting running pods only |
+| Clusters | `-c` or `--clusters` | List all clusters and set the active one |
 | Deployments | `-d` or `--deployments` | List all deployments and set the number of replicas |
 
 Run the script with the desired argument. For example, to list all clusters and set the active one:
@@ -101,6 +98,12 @@ To manage your pods:
 
 ```sh
 python main.py
+```
+
+To manage running pods only:
+
+```sh
+python main.py -r # or --running
 ```
 
 ### Pods

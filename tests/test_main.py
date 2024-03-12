@@ -17,6 +17,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.running)
 
     @patch('sys.argv', ['main.py', '-c'])
     def test_getting_arguments_returns_clusters_option(self, *_):
@@ -26,6 +27,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertTrue(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.running)
 
     @patch('sys.argv', ['main.py', '--clusters'])
     def test_getting_arguments_returns_explicit_clusters_option(self, *_):
@@ -35,6 +37,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertTrue(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.running)
 
     @patch('sys.argv', ['main.py', '-d'])
     def test_getting_arguments_returns_deployments_option(self, *_):
@@ -44,6 +47,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertTrue(actual.deployments)
+        self.assertFalse(actual.running)
 
     @patch('sys.argv', ['main.py', '--deployments'])
     def test_getting_arguments_returns_explicit_deployments_option(self, *_):
@@ -53,6 +57,17 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertTrue(actual.deployments)
+        self.assertFalse(actual.running)
+
+    @patch('sys.argv', ['main.py', '-r'])
+    def test_getting_arguments_returns_running_option(self, *_):
+        # Act
+        actual = get_arguments()
+
+        # Assert
+        self.assertFalse(actual.clusters)
+        self.assertFalse(actual.deployments)
+        self.assertTrue(actual.running)
 
     def test_banner_returns_expected_string(self, mock_print, *_):
         # Arrange
@@ -294,6 +309,22 @@ class TestMain(unittest.TestCase):
 
         # Act
         result = main()
+
+        # Assert
+        self.assertTrue(result)
+
+    @patch('builtins.exit')
+    @patch("builtins.input", return_value='1')
+    @patch('readchar.readkey', side_effect=['\n', '\x1b[B', '\n', '\x1b[B', '\n'])
+    @patch('subprocess.run')
+    def test_main_succeds_to_get_running_pods_logs_with_set_flag(self, mock_run, *_):
+        # Arrange
+        mock_run.side_effect = [
+            MockSubProcess('current_cluster'),
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2', 'Running'])), MockSubProcess(None)]
+
+        # Act
+        result = main(running_pods=True)
 
         # Assert
         self.assertTrue(result)

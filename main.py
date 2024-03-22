@@ -12,8 +12,8 @@ def get_arguments():
                         help="current cluster", action="store_true")
     parser.add_argument("-d", "--deployments",
                         help="deployments info", action="store_true")
-    parser.add_argument("-r", "--running",
-                        help="running pods", action="store_true")
+    parser.add_argument("-f", "--filter",
+                        help="filter criteria separated by comma to filter the pods", action="store", default=None)
 
     args = parser.parse_args()
 
@@ -156,17 +156,22 @@ def set_deployment_replicas() -> bool:
     return True
 
 
-def main(running_pods: bool = False):
+def main(filter: str = None):
     try:
         print(
             f"Current cluster: {txt_color('cyan')}{get_current_cluster()}{reset_code}\n")
 
         response = run_shell([KUBE, "get", "pods"]).split("\n")
 
-        pod_list = response[1:]
+        all_pods = response[1:]
+        pod_list = []
 
-        if running_pods:
-            pod_list = [x for x in pod_list if "Running" in x]
+        if filter is not None:
+            filters = filter.split(",")
+            pod_list += [x for x in all_pods
+                         if all([y.lower() in x.lower() for y in filters])]
+        else:
+            pod_list = all_pods
 
         if len(pod_list) == 0:
             log_message("No pods found", 'yellow')
@@ -240,5 +245,4 @@ if __name__ == "__main__":  # pragma: no cover
     elif args.deployments is True:
         set_deployment_replicas()
     else:
-        running = args.running
-        main(running_pods=running)
+        main(filter=args.filter)

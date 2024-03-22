@@ -1,0 +1,3 @@
+language="python"
+test_dir="./tests"
+exclude_files=""

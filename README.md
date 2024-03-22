@@ -78,7 +78,7 @@ python -m pip install -r requirements.txt
 | Argument | Flag | Description |
 | --- | --- | --- |
 | Pods |  | Run the main script to management your pods |
-| Running pods | `-r` or `--running` | Run the main script getting running pods only |
+| Filter | `-f` or `--filter` | Run the main script getting filtered pods list |
 | Clusters | `-c` or `--clusters` | List all clusters and set the active one |
 | Deployments | `-d` or `--deployments` | List all deployments and set the number of replicas |
 
@@ -100,10 +100,10 @@ To manage your pods:
 python main.py
 ```
 
-To manage running pods only:
+To manage filtered pod list:
 
 ```sh
-python main.py -r # or --running
+python main.py -f <filters-separated-by-comma> # or --filter
 ```
 
 ### Pods

@@ -197,8 +197,8 @@ def set_namespaces() -> bool:
         log_message("No namespaces found", 'yellow')
         exit(-1)
 
-    menu = Menu(options=[f"{'  ' if not current.lower()
-                in x.lower() else '* '}{x}" for x in namespaces])
+    menu = Menu(options=[
+        f"{'  ' if not current.lower() in x.lower() else '* '}{x}" for x in namespaces])
 
     index = int(menu.run_menu(
         title="Select a namespace:", get_index=True))

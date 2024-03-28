@@ -17,6 +17,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '-c'])
@@ -27,6 +28,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertTrue(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '--clusters'])
@@ -37,6 +39,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertTrue(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '-d'])
@@ -47,6 +50,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertTrue(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '--deployments'])
@@ -57,6 +61,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertTrue(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '-f'])
@@ -75,6 +80,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertEqual(actual.filter, 'filter')
 
     def test_banner_returns_expected_string(self, mock_print, *_):

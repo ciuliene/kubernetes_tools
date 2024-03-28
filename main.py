@@ -12,6 +12,8 @@ def get_arguments():
                         help="current cluster", action="store_true")
     parser.add_argument("-d", "--deployments",
                         help="deployments info", action="store_true")
+    parser.add_argument("-ns", "--namespaces",
+                        help="namespaces", action="store_true")
     parser.add_argument("-f", "--filter",
                         help="filter criteria separated by comma to filter the pods", action="store", default=None)
 
@@ -206,6 +208,9 @@ def set_namespaces() -> bool:
     run_shell([KUBE, "config", "set-context",
               "--current", "--namespace", namespace])
 
+    log_message(
+        f"Current namespace: {txt_color('cyan')}{namespace}{reset_code}\n")
+
     return True
 
 def main(filter: str | None = None):
@@ -304,5 +309,7 @@ if __name__ == "__main__":  # pragma: no cover
         set_current_cluster()
     elif args.deployments is True:
         set_deployment_replicas()
+    elif args.namespaces is True:
+        set_namespaces()
     else:
         main(filter=args.filter)

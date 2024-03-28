@@ -25,7 +25,8 @@ txt_color = lambda c: text_color_code[c]
 bgd_color = lambda c: bg_color_code[c]
 reset_code = '\033[0m'
 
-def log_message(message:str, text_color:str = None, bg_color:str = None, end: str = None):
+
+def log_message(message: str, text_color: str | None = None, bg_color: str | None = None, end: str | None = None):
     """Log message with custom colors
 
     Available color:

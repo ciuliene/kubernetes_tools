@@ -17,6 +17,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '-c'])
@@ -27,6 +28,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertTrue(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '--clusters'])
@@ -37,6 +39,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertTrue(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '-d'])
@@ -47,6 +50,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertTrue(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '--deployments'])
@@ -57,6 +61,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertTrue(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertIsNone(actual.filter)
 
     @patch('sys.argv', ['main.py', '-f'])
@@ -75,6 +80,7 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertFalse(actual.clusters)
         self.assertFalse(actual.deployments)
+        self.assertFalse(actual.namespaces)
         self.assertEqual(actual.filter, 'filter')
 
     def test_banner_returns_expected_string(self, mock_print, *_):
@@ -129,6 +135,14 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertEqual(actual, [])
 
+    @patch('main.run_shell', return_value=None)
+    def test_getting_clusters_returns_empty_list_when_run_shell_returns_null(self, *_):
+        # Act
+        actual = get_clusters()
+
+        # Assert
+        self.assertEqual(actual, [])
+
     @patch('subprocess.run')
     def test_getting_clusters_returns_expected_list(self, mock_run, *_):
         # Arrange
@@ -167,8 +181,11 @@ class TestMain(unittest.TestCase):
     @patch('subprocess.run')
     def test_setting_current_cluster_returns_expected_string(self, mock_run, *_):
         # Arrange
-        mock_run.side_effect = [MockSubProcess(
-            "\n".join(["c1", "c2"])), MockSubProcess(None), MockSubProcess(None), MockSubProcess("c1")]
+        mock_run.side_effect = [
+            MockSubProcess("\n".join(["c1", "c2"])),
+            MockSubProcess(None),
+            MockSubProcess(None),
+            MockSubProcess("c1")]
 
         # Act
         result = set_current_cluster()
@@ -205,6 +222,15 @@ class TestMain(unittest.TestCase):
 
     # Just to avoid the exit call
     @patch('builtins.exit', side_effect=ValueError)
+    @patch('main.run_shell', return_value=None)
+    def test_setting_replicas_quits_when_run_shell_returns_none(self, *_):
+
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            set_deployment_replicas()
+
+    # Just to avoid the exit call
+    @patch('builtins.exit', side_effect=ValueError)
     @patch("builtins.input", return_value="-1")
     @patch('readchar.readkey')
     @patch('subprocess.run')
@@ -222,14 +248,79 @@ class TestMain(unittest.TestCase):
     @patch('subprocess.run')
     def test_setting_replicas_succeeds(self, mock_run, mock_readkey, *_):
         # Arrange
-        mock_run.side_effect = [MockSubProcess(
-            '\n'.join(['d1', 'd2'])), MockSubProcess(None)]
+        mock_run.side_effect = [
+            MockSubProcess('\n'.join(['d1', 'd2'])),
+            MockSubProcess(None)]
         mock_readkey.side_effect = ['\n']
 
         # Act & Assert
         result = set_deployment_replicas()
 
         self.assertTrue(result)
+
+    @patch('subprocess.run')
+    def test_getting_current_namespace_returns_default_when_response_is_null(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess(None)
+
+        # Act
+        actual = get_current_namespace()
+
+        # Assert
+        self.assertEqual(actual, 'default')
+
+    @patch('main.run_shell', return_value=None)
+    def test_getting_current_namespace_returns_default_when_run_shell_returns_null(self, *_):
+        # Act
+        actual = get_current_namespace()
+
+        # Assert
+        self.assertEqual(actual, 'default')
+
+    @patch('subprocess.run')
+    def test_getting_current_namespace_returns_expected_string(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess("namespace")
+
+        # Act
+        actual = get_current_namespace()
+
+        # Assert
+        self.assertEqual(actual, 'namespace')
+
+    @patch('builtins.exit', side_effect=ValueError)
+    @patch('subprocess.run')
+    def test_getting_namespaces_quits_when_subprocess_returns_null(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess(None)
+
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            set_namespaces()
+
+    @patch('builtins.exit', side_effect=ValueError)
+    @patch('subprocess.run')
+    def test_getting_namespaces_quits_when_no_namespaces_are_found(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess("Name\n")
+
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            set_namespaces()
+
+    @patch('readchar.readkey', side_effect=['\n'])
+    @patch('main.run_shell')
+    def test_getting_namespaces_returns_expected_list(self, mock_run, *_):
+        # Arrange
+        mock_run.side_effect = ["Name\ndefault\nnamespace", "namespace", None]
+
+        # Act
+        result = set_namespaces()
+
+        # Assert
+        self.assertTrue(result)
+        mock_run.assert_called_with([KUBE, "config", "set-context",
+                                    "--current", "--namespace", "default"])
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch('subprocess.run')
@@ -243,13 +334,22 @@ class TestMain(unittest.TestCase):
             main()
 
     @patch('builtins.exit', side_effect=ValueError)
+    @patch('main.run_shell', return_value=None)
+    def test_main_quits_when_run_shell_returns_null(self, *_):
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            main()
+
+    @patch('builtins.exit', side_effect=ValueError)
     @patch('readchar.readkey', return_value='\n')
     @patch('subprocess.run')
     def test_main_succeds_to_run_container_shell(self, mock_run, *_):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('current_namespace'),
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -265,7 +365,9 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('current_namespace'),
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -281,7 +383,9 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('current_namespace'),
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -297,7 +401,9 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('current_namespace'),
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), 
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -313,7 +419,9 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('current_namespace'),
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), 
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -329,7 +437,9 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess("ID Name Status\n0 p1 Running"), MockSubProcess(None)]
+            MockSubProcess('current_namespace'),
+            MockSubProcess("ID Name Status\n0 p1 Running"), 
+            MockSubProcess(None)]
 
         # Act
         result = main(filter='running')
@@ -345,7 +455,9 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess("ID Name Status\n0 p1 Running\n1 p2 Pending\n2 p3 Error"), MockSubProcess(None)]
+            MockSubProcess('current_namespace'),
+            MockSubProcess("ID Name Status\n0 p1 Running\n1 p2 Pending\n2 p3 Error"), 
+            MockSubProcess(None)]
 
         # Act
         result = main(filter='running,pending')

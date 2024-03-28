@@ -34,7 +34,7 @@ def banner():
                       reset_code]))
 
 
-def run_shell(cmd: list = [], capture_output: bool = True) -> str:
+def run_shell(cmd: list = [], capture_output: bool = True) -> str | None:
     response = subprocess.run(cmd, capture_output=capture_output, check=True).stdout
 
     if response is not None:
@@ -72,9 +72,14 @@ commands = [
     ]
 
 
-def get_clusters() -> str:
+def get_clusters() -> list[dict]:
     response = run_shell(
-        [KUBE, "config", "get-contexts", "-o", "name"]).split("\n")
+        [KUBE, "config", "get-contexts", "-o", "name"])
+
+    if response is not None:
+        response = response.split("\n")
+    else:
+        response = []
 
     current = None
 
@@ -86,7 +91,7 @@ def get_clusters() -> str:
     return [{'name': name, 'current': name == current} for name in response if len(name) > 0]
 
 
-def get_current_cluster() -> str:
+def get_current_cluster() -> str | None:
     response = run_shell([KUBE, "config", "current-context"])
     if response is not None:
         return response.strip()
@@ -104,8 +109,8 @@ def set_current_cluster() -> bool:
 
         menu = Menu(options=options)
 
-        selected_cluster_index = menu.run_menu(
-            title="Select the cluster:", get_index=True)
+        selected_cluster_index = int(menu.run_menu(
+            title="Select the cluster:", get_index=True))
 
         cluster_name = clusters[selected_cluster_index]['name']
 
@@ -123,7 +128,13 @@ def set_current_cluster() -> bool:
 
 
 def set_deployment_replicas() -> bool:
-    response = run_shell([KUBE, "get", "deployments"]).split("\n")
+    cmd_result = run_shell([KUBE, "get", "deployments"])
+
+    if cmd_result is None:
+        log_message("No deployments found", 'yellow')
+        exit(-1)
+
+    response = cmd_result.split("\n")
 
     title = f"Select a deployment:\n{response[:1][0]}"
     deployments = response[1:]
@@ -135,7 +146,7 @@ def set_deployment_replicas() -> bool:
 
     menu = Menu(options=deployments)
 
-    deployment = menu.run_menu(title=title).split(" ")[0]
+    deployment = str(menu.run_menu(title=title)).split(" ")[0]
 
     replicas = input("Number of replicas: ")
 
@@ -156,20 +167,28 @@ def set_deployment_replicas() -> bool:
     return True
 
 
-def main(filter: str = None):
+def main(filter: str | None = None):
     try:
         print(
             f"Current cluster: {txt_color('cyan')}{get_current_cluster()}{reset_code}\n")
 
-        response = run_shell([KUBE, "get", "pods"]).split("\n")
+        cmd = [KUBE, "get", "pods"]
+
+        cmd_result = run_shell(cmd)
+
+        if cmd_result is None:
+            log_message("No pods found", 'yellow')
+            exit(-1)
+
+        response = cmd_result.split("\n")
 
         all_pods = response[1:]
         pod_list = []
 
         if filter is not None:
             filters = filter.split(",")
-            pod_list += [x for x in all_pods
-                         if all([y.lower() in x.lower() for y in filters])]
+            pod_list += [
+                x for x in all_pods if all([y.lower() in x.lower() for y in filters])]
         else:
             pod_list = all_pods
 
@@ -183,7 +202,7 @@ def main(filter: str = None):
 
         menu = Menu(options=pod_list)
 
-        pod = menu.run_menu(title=title).split(" ")[0]
+        pod = str(menu.run_menu(title=title)).split(" ")[0]
 
         menu = Menu(options=[x['txt'] for x in commands])
         id = menu.run_menu(title="Select the command:", get_index=True)

@@ -129,6 +129,14 @@ class TestMain(unittest.TestCase):
         # Assert
         self.assertEqual(actual, [])
 
+    @patch('main.run_shell', return_value=None)
+    def test_getting_clusters_returns_empty_list_when_run_shell_returns_null(self, *_):
+        # Act
+        actual = get_clusters()
+
+        # Assert
+        self.assertEqual(actual, [])
+
     @patch('subprocess.run')
     def test_getting_clusters_returns_expected_list(self, mock_run, *_):
         # Arrange
@@ -167,8 +175,11 @@ class TestMain(unittest.TestCase):
     @patch('subprocess.run')
     def test_setting_current_cluster_returns_expected_string(self, mock_run, *_):
         # Arrange
-        mock_run.side_effect = [MockSubProcess(
-            "\n".join(["c1", "c2"])), MockSubProcess(None), MockSubProcess(None), MockSubProcess("c1")]
+        mock_run.side_effect = [
+            MockSubProcess("\n".join(["c1", "c2"])),
+            MockSubProcess(None),
+            MockSubProcess(None),
+            MockSubProcess("c1")]
 
         # Act
         result = set_current_cluster()
@@ -205,6 +216,15 @@ class TestMain(unittest.TestCase):
 
     # Just to avoid the exit call
     @patch('builtins.exit', side_effect=ValueError)
+    @patch('main.run_shell', return_value=None)
+    def test_setting_replicas_quits_when_run_shell_returns_none(self, *_):
+
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            set_deployment_replicas()
+
+    # Just to avoid the exit call
+    @patch('builtins.exit', side_effect=ValueError)
     @patch("builtins.input", return_value="-1")
     @patch('readchar.readkey')
     @patch('subprocess.run')
@@ -222,8 +242,9 @@ class TestMain(unittest.TestCase):
     @patch('subprocess.run')
     def test_setting_replicas_succeeds(self, mock_run, mock_readkey, *_):
         # Arrange
-        mock_run.side_effect = [MockSubProcess(
-            '\n'.join(['d1', 'd2'])), MockSubProcess(None)]
+        mock_run.side_effect = [
+            MockSubProcess('\n'.join(['d1', 'd2'])),
+            MockSubProcess(None)]
         mock_readkey.side_effect = ['\n']
 
         # Act & Assert
@@ -243,13 +264,21 @@ class TestMain(unittest.TestCase):
             main()
 
     @patch('builtins.exit', side_effect=ValueError)
+    @patch('main.run_shell', return_value=None)
+    def test_main_quits_when_run_shell_returns_null(self, *_):
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            main()
+
+    @patch('builtins.exit', side_effect=ValueError)
     @patch('readchar.readkey', return_value='\n')
     @patch('subprocess.run')
     def test_main_succeds_to_run_container_shell(self, mock_run, *_):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -265,7 +294,8 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -281,7 +311,8 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -297,7 +328,8 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), 
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -313,7 +345,8 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), MockSubProcess(None)]
+            MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), 
+            MockSubProcess(None)]
 
         # Act
         result = main()
@@ -329,7 +362,8 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess("ID Name Status\n0 p1 Running"), MockSubProcess(None)]
+            MockSubProcess("ID Name Status\n0 p1 Running"), 
+            MockSubProcess(None)]
 
         # Act
         result = main(filter='running')
@@ -345,7 +379,8 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
-            MockSubProcess("ID Name Status\n0 p1 Running\n1 p2 Pending\n2 p3 Error"), MockSubProcess(None)]
+            MockSubProcess("ID Name Status\n0 p1 Running\n1 p2 Pending\n2 p3 Error"), 
+            MockSubProcess(None)]
 
         # Act
         result = main(filter='running,pending')

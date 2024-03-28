@@ -50,7 +50,7 @@ class Menu():
         except KeyboardInterrupt:
             exit(0)
 
-    def run_menu(self, title: str = None, get_index: bool = False, help: bool = True) -> str | int:
+    def run_menu(self, title: str | None = None, get_index: bool = False, help: bool = True) -> str | int:
         if help:
             print("Press Q key or CTRL+C combination to quit\n")
         print(title)
@@ -66,8 +66,9 @@ class Menu():
             self.selected_index += input
             self.selected_index = max(0, min(self.selected_index, len(self.options) - 1))
 
-        for _ in range(self._n_lines):
-            sys.stdout.write("\n")
+        if self._n_lines is not None:
+            for _ in range(self._n_lines):
+                sys.stdout.write("\n")
 
         sys.stdout.write("\n")
 

@@ -284,6 +284,26 @@ class TestMain(unittest.TestCase):
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch('subprocess.run')
+    def test_getting_namespaces_quits_when_subprocess_returns_null(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess(None)
+
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            get_namespaces()
+
+    @patch('builtins.exit', side_effect=ValueError)
+    @patch('subprocess.run')
+    def test_getting_namespaces_quits_when_no_namespaces_are_found(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess("Name\n")
+
+        # Act & Assert
+        with self.assertRaises(ValueError):
+            get_namespaces()
+
+    @patch('builtins.exit', side_effect=ValueError)
+    @patch('subprocess.run')
     def test_main_quits_when_pod_list_is_empty(self, mock_run, *_):
         # Arrange
         mock_run.side_effect = [MockSubProcess(

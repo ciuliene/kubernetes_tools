@@ -175,6 +175,26 @@ def get_current_namespace() -> str:
     else:
         return "default"
 
+
+def get_namespaces() -> bool:
+    cmd_result = run_shell(
+        [KUBE, "get", "namespaces"])
+
+    if cmd_result is None:
+        log_message("No namespaces found", 'yellow')
+        exit(-1)
+
+    response = cmd_result.split("\n")
+
+    namespaces = response[1:]
+    namespaces = [x for x in namespaces if len(x) > 0]
+
+    if len(namespaces) == 0:
+        log_message("No namespaces found", 'yellow')
+        exit(-1)
+
+    return True
+
 def main(filter: str | None = None):
     try:
         print(

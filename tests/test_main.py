@@ -347,6 +347,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
+            MockSubProcess('current_namespace'),
             MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
             MockSubProcess(None)]
 
@@ -364,6 +365,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
+            MockSubProcess('current_namespace'),
             MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
             MockSubProcess(None)]
 
@@ -381,6 +383,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
+            MockSubProcess('current_namespace'),
             MockSubProcess('\n'.join(['Name', 'p1', 'p2'])),
             MockSubProcess(None)]
 
@@ -398,6 +401,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
+            MockSubProcess('current_namespace'),
             MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), 
             MockSubProcess(None)]
 
@@ -415,6 +419,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
+            MockSubProcess('current_namespace'),
             MockSubProcess('\n'.join(['Name', 'p1', 'p2'])), 
             MockSubProcess(None)]
 
@@ -432,6 +437,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
+            MockSubProcess('current_namespace'),
             MockSubProcess("ID Name Status\n0 p1 Running"), 
             MockSubProcess(None)]
 
@@ -449,6 +455,7 @@ class TestMain(unittest.TestCase):
         # Arrange
         mock_run.side_effect = [
             MockSubProcess('current_cluster'),
+            MockSubProcess('current_namespace'),
             MockSubProcess("ID Name Status\n0 p1 Running\n1 p2 Pending\n2 p3 Error"), 
             MockSubProcess(None)]
 

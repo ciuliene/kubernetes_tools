@@ -216,7 +216,9 @@ def set_namespaces() -> bool:
 def main(filter: str | None = None):
     try:
         print(
-            f"Current cluster: {txt_color('cyan')}{get_current_cluster()}{reset_code}\n")
+            f"Current cluster: {txt_color('cyan')}{get_current_cluster()}{reset_code}")
+        print(
+            f"Current namespace: {txt_color('cyan')}{get_current_namespace()}{reset_code}\n")
 
         cmd = [KUBE, "get", "pods"]
 

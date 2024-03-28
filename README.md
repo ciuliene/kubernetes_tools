@@ -81,6 +81,7 @@ python -m pip install -r requirements.txt
 | Filter | `-f` or `--filter` | Run the main script getting filtered pods list |
 | Clusters | `-c` or `--clusters` | List all clusters and set the active one |
 | Deployments | `-d` or `--deployments` | List all deployments and set the number of replicas |
+| Namespaces | `-ns` or `--namespaces` | List all namespaces and set the active one |
 
 Run the script with the desired argument. For example, to list all clusters and set the active one:
 
@@ -92,6 +93,12 @@ To list all deployments and set the number of replicas:
 
 ```sh
 python main.py --deployments # or -d
+```
+
+To list all namespaces and set the active one:
+
+```sh
+python main.py --namespaces # or -ns
 ```
 
 To manage your pods:

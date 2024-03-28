@@ -176,7 +176,7 @@ def get_current_namespace() -> str:
         return "default"
 
 
-def get_namespaces() -> bool:
+def set_namespaces() -> bool:
     cmd_result = run_shell(
         [KUBE, "get", "namespaces"])
 
@@ -186,12 +186,25 @@ def get_namespaces() -> bool:
 
     response = cmd_result.split("\n")
 
+    current = get_current_namespace()
+
     namespaces = response[1:]
     namespaces = [x for x in namespaces if len(x) > 0]
 
     if len(namespaces) == 0:
         log_message("No namespaces found", 'yellow')
         exit(-1)
+
+    menu = Menu(options=[f"{'  ' if not current.lower()
+                in x.lower() else '* '}{x}" for x in namespaces])
+
+    index = int(menu.run_menu(
+        title="Select a namespace:", get_index=True))
+
+    namespace = namespaces[index].split(" ")[0]
+
+    run_shell([KUBE, "config", "set-context",
+              "--current", "--namespace", namespace])
 
     return True
 

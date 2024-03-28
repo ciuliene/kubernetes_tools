@@ -290,7 +290,7 @@ class TestMain(unittest.TestCase):
 
         # Act & Assert
         with self.assertRaises(ValueError):
-            get_namespaces()
+            set_namespaces()
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch('subprocess.run')
@@ -300,7 +300,21 @@ class TestMain(unittest.TestCase):
 
         # Act & Assert
         with self.assertRaises(ValueError):
-            get_namespaces()
+            set_namespaces()
+
+    @patch('readchar.readkey', side_effect=['\n'])
+    @patch('main.run_shell')
+    def test_getting_namespaces_returns_expected_list(self, mock_run, *_):
+        # Arrange
+        mock_run.side_effect = ["Name\ndefault\nnamespace", "namespace", None]
+
+        # Act
+        result = set_namespaces()
+
+        # Assert
+        self.assertTrue(result)
+        mock_run.assert_called_with([KUBE, "config", "set-context",
+                                    "--current", "--namespace", "default"])
 
     @patch('builtins.exit', side_effect=ValueError)
     @patch('subprocess.run')

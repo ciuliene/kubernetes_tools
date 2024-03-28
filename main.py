@@ -167,6 +167,14 @@ def set_deployment_replicas() -> bool:
     return True
 
 
+def get_current_namespace() -> str:
+    response = run_shell(
+        [KUBE, "config", "view", "--minify", "--output", "jsonpath={..namespace}"])
+    if response is not None:
+        return response.strip()
+    else:
+        return "default"
+
 def main(filter: str | None = None):
     try:
         print(

@@ -252,6 +252,36 @@ class TestMain(unittest.TestCase):
 
         self.assertTrue(result)
 
+    @patch('subprocess.run')
+    def test_getting_current_namespace_returns_default_when_response_is_null(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess(None)
+
+        # Act
+        actual = get_current_namespace()
+
+        # Assert
+        self.assertEqual(actual, 'default')
+
+    @patch('main.run_shell', return_value=None)
+    def test_getting_current_namespace_returns_default_when_run_shell_returns_null(self, *_):
+        # Act
+        actual = get_current_namespace()
+
+        # Assert
+        self.assertEqual(actual, 'default')
+
+    @patch('subprocess.run')
+    def test_getting_current_namespace_returns_expected_string(self, mock_run, *_):
+        # Arrange
+        mock_run.return_value = MockSubProcess("namespace")
+
+        # Act
+        actual = get_current_namespace()
+
+        # Assert
+        self.assertEqual(actual, 'namespace')
+
     @patch('builtins.exit', side_effect=ValueError)
     @patch('subprocess.run')
     def test_main_quits_when_pod_list_is_empty(self, mock_run, *_):

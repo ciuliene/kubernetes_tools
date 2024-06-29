@@ -1,3 +1,5 @@
 language="python"
 test_dir="./tests"
+filter=""
 exclude_files=""
+virtual_env="venv"

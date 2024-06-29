@@ -1,6 +1,6 @@
 import subprocess
 from src.custom_log import *
-from src.menu import Menu
+from terminaloptions import Menu
 import argparse
 
 

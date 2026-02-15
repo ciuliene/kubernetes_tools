@@ -1,6 +1,5 @@
 import subprocess
-from src.custom_log import *
-from terminaloptions import Menu
+from terminaloptions import Menu, txt_color, reset_code, log_message
 import argparse
 
 
